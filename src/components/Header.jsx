@@ -75,41 +75,51 @@ const Header = () => {
         </div>
 
         {/* Live Clock block with Robot Image on the right */}
-        <div className="header-widgets">
+        <div className="header-widgets" style={{ gap: '1.2rem' }}>
            <div style={{
-              background: 'rgba(245, 243, 248, 0.85)',
+              background: 'white',
               backdropFilter: 'blur(10px)',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '24px', 
-              boxShadow: 'var(--shadow-sm)',
-              border: '1px solid rgba(255, 255, 255, 0.6)',
+              padding: '1rem 2rem',
+              borderRadius: '30px', 
+              boxShadow: '0 8px 16px rgba(45, 27, 77, 0.08)',
+              border: '2px solid rgba(255, 255, 255, 0.9)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center'
            }}>
-              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>CAMPUS TIME</div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-primary-dark)', fontFamily: 'monospace' }}>{timeString}</div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.05em', marginBottom: '0.3rem' }}>CAMPUS TIME</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-primary-dark)', fontFamily: 'monospace' }}>{timeString}</div>
            </div>
            
-           <div style={{ padding: '0 0.25rem', display: 'flex', alignItems: 'center' }}>
-             <CustomCompass size={56} color="var(--color-primary)" />
+           <div style={{ 
+              width: '92px', 
+              height: '92px', 
+              borderRadius: '50%',
+              background: 'white',
+              border: '2px solid rgba(255, 255, 255, 0.9)',
+              boxShadow: '0 8px 16px rgba(45, 27, 77, 0.12)',
+              display: 'flex', 
+              alignItems: 'center',
+              justifyContent: 'center'
+           }}>
+             <CustomCompass size={74} color="var(--color-primary)" />
            </div>
 
            <div style={{
-              width: '64px',
-              height: '64px',
+              width: '92px',
+              height: '92px',
               borderRadius: '50%',
-              background: 'rgba(245, 243, 248, 0.5)',
+              background: 'white',
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255, 255, 255, 0.7)',
-              boxShadow: '0 8px 16px rgba(45, 27, 77, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.6)',
+              border: '2px solid rgba(255, 255, 255, 0.9)',
+              boxShadow: '0 8px 16px rgba(45, 27, 77, 0.12)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               overflow: 'hidden',
-              padding: '6px'
+              padding: '8px'
            }}>
 
              <img 

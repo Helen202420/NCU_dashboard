@@ -62,10 +62,10 @@
   height: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
+  align-items: flex-start;
   pointer-events: none; /* Let clicks pass through empty space */
   padding: 2rem 0.5rem;
-  z-index: 20;
+  z-index: 50;
 }
 
 
