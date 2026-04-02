@@ -65,7 +65,8 @@ const ForecastList = () => {
           return (
             <div 
               key={i} 
-              onClick={() => setActiveIndex(isActive ? null : i)} // Toggle selection on click
+              onMouseEnter={() => setActiveIndex(i)} 
+              onMouseLeave={() => setActiveIndex(null)}
               className={`glass-panel ${isActive ? 'text-white' : ''}`}
               style={{ 
                 background: isActive ? '#8576A5' : '',
@@ -77,7 +78,7 @@ const ForecastList = () => {
                 gap: '1rem',
                 border: isActive ? '2px solid var(--color-secondary)' : '1px solid rgba(0,0,0,0.05)',
                 position: 'relative',
-                cursor: 'pointer', /* Make it clear that it is clickable */
+                cursor: 'default',
                 transition: 'all 0.3s ease'
               }}>
               

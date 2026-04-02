@@ -23,10 +23,10 @@ const SatelliteTrack = () => {
       <div style={{ position: 'relative', zIndex: 1, padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div>
            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <h2 style={{ fontSize: 'var(--fs-h2)', fontWeight: 700, color: '#F8FAFC' }}>Satellite Track</h2>
+              <h2 style={{ fontSize: 'var(--fs-h2)', fontWeight: 700, color: '#F8FAFC' }}>天氣衛星圖</h2>
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-secondary)' }}></div>
            </div>
-           <p style={{ fontSize: 'var(--fs-tiny)', fontWeight: 600, color: '#94A3B8', letterSpacing: '0.05em', marginTop: '0.2rem' }}>ORBITAL CLOUD ANALYSIS</p>
+           <p style={{ fontSize: 'var(--fs-tiny)', fontWeight: 600, color: '#94A3B8', letterSpacing: '0.05em', marginTop: '0.2rem' }}>Coming Soon...</p>
         </div>
 
 
