@@ -1,0 +1,96 @@
+.dashboard-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dashboard-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: center;
+}
+
+/* Map & Panels Layering */
+.map-and-panels-container {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-map-wrapper {
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.center-map-wrapper:hover {
+  transform: scale(1.02);
+}
+
+/* Side panels absolute positioning */
+.side-panels-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  pointer-events: none; /* Let clicks pass through empty space */
+  padding: 2rem 0;
+  z-index: 20;
+}
+
+.panel-container {
+  pointer-events: auto; /* Re-enable clicks on panels themselves */
+  width: 320px;
+  opacity: 0; 
+  /* We control slide with JS classes */
+}
+
+/* Middle Section: Atmosphere and Satellite */
+.middle-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Bottom Section */
+.bottom-section {
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .middle-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .side-panels-wrapper {
+    flex-direction: column;
+    position: static;
+    height: auto;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 0;
+    pointer-events: auto;
+    margin-bottom: 2rem;
+  }
+  
+  .panel-container {
+    width: 100%;
+    max-width: 400px;
+  }
+}
