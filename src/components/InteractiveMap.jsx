@@ -5,73 +5,48 @@ const strokeColor = "var(--color-primary-dark)";
 
 const icons = {
   basketball: (
-    <svg width="45%" height="45%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="45%" height="45%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" />
-      {/* 經典籃球十字線與側邊弧線 */}
-      <path d="M2 12h20" />
-      <path d="M12 2v20" />
-      <path d="M4.93 4.93c2.83 2.83 2.83 11.31 0 14.14" />
-      <path d="M19.07 4.93c-2.83 2.83-2.83 11.31 0 14.14" />
+      <path d="M 2 12 H 22 M 12 2 V 22 M 4.9 4.9 Q 10.5 12 4.9 19.1 M 19.1 4.9 Q 13.5 12 19.1 19.1" />
     </svg>
   ),
   volleyball: (
-    <svg width="45%" height="45%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(-20deg)' }}>
+    <svg width="45%" height="45%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(-20deg)' }}>
       <circle cx="12" cy="12" r="10" />
-      {/* 經典 18 片傳統排球紋路 (Classic 18-panel volleyball) */}
-      <path d="M 8.9 2.5 Q 4 12 8.9 21.5" />
-      <path d="M 15.1 2.5 Q 20 12 15.1 21.5" />
-      
-      <path d="M 6.4 7.5 Q 12 9.5 17.6 7.5" />
-      <path d="M 6.4 16.5 Q 12 14.5 17.6 16.5" />
-
-      <path d="M 2 12 L 6 12" />
-      <path d="M 4.8 5 L 7.3 6.6" />
-      <path d="M 4.8 19 L 7.3 17.4" />
-      
-      <path d="M 22 12 L 18 12" />
-      <path d="M 19.2 5 L 16.7 6.6" />
-      <path d="M 19.2 19 L 16.7 17.4" />
+      <path d="M 8.9 2.5 Q 4 12 8.9 21.5 M 15.1 2.5 Q 20 12 15.1 21.5 M 6.4 7.5 Q 12 9.5 17.6 7.5 M 6.4 16.5 Q 12 14.5 17.6 16.5 M 2 12 L 6 12 M 4.8 5 L 7.3 6.6 M 4.8 19 L 7.3 17.4 M 22 12 L 18 12 M 19.2 5 L 16.7 6.6 M 19.2 19 L 16.7 17.4" />
     </svg>
   ),
   runner: (
-    <svg width="30%" height="40%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'scale(1.2)' }}>
-      <circle cx="14" cy="5" r="2.5" />
-      {/* Stick figure body/arms/legs based loosely on runner icon */}
-      <path d="M9 10l3-2.5 3.5 2 2.5-1" />
-      <path d="M12 13.5L9.5 18 11.5 22" />
-      <path d="M12 13.5l3.5-1 1.5 5" />
-      <path d="M1 11h4" />
-      <path d="M2 15h3" />
+    <svg width="45%" height="55%" viewBox="0 0 24 24" stroke={strokeColor} strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'translateX(-2px)' }}>
+      {/* Head */}
+      <circle cx="16" cy="3.5" r="2.2" fill={strokeColor} stroke="none" />
+      
+      {/* Right Arm (forward, bent up) */}
+      <path d="M 13.5 7.5 L 17 10 L 20.5 5" fill="none" />
+      
+      {/* Left Arm (backward, swept left and down) */}
+      <path d="M 13.5 7.5 L 9 10 L 5 12" fill="none" />
+      
+      {/* Torso */}
+      <path d="M 13.5 7.5 L 11 14" fill="none" />
+      
+      {/* Right Leg (front knee bent, leg down) */}
+      <path d="M 11 14 L 15 17.5 L 12 22.5" fill="none" />
+      
+      {/* Left Leg (back, foot swept high) */}
+      <path d="M 11 14 L 7 17.5 L 2 15" fill="none" />
     </svg>
   ),
   tennis: (
-    <svg width="25%" height="75%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="8" cy="8" r="5" />
-      <line x1="11.5" y1="11.5" x2="19" y2="19" />
-      <line x1="17" y1="21" x2="21" y2="17" />
-      {/* Racket grid inner lines */}
-      <path d="M4 8h8 M8 4v8" opacity="0.4" />
-      
-      <circle cx="16" cy="8" r="5" />
-      <line x1="12.5" y1="11.5" x2="5" y2="19" />
-      <line x1="7" y1="21" x2="3" y2="17" />
-      {/* Racket 2 grid inner lines */}
-      <path d="M12 8h8 M16 4v8" opacity="0.4" />
-      
-      <circle cx="12" cy="3" r="1.5" fill={strokeColor} />
+    <svg width="45%" height="45%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(25deg)' }}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M4.9 4.9 Q 10.5 12 4.9 19.1" />
+      <path d="M19.1 4.9 Q 13.5 12 19.1 19.1" />
     </svg>
   ),
   restroom: (
-    <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      {/* Male Figure */}
-      <circle cx="7" cy="5" r="2" />
-      <path d="M7 8 L7 15" />
-      <path d="M4 10 L10 10" />
-      <path d="M7 15 L5 21 M7 15 L9 21" />
-      {/* Female Figure */}
-      <circle cx="17" cy="5" r="2" />
-      <path d="M17 8 L14 15 L20 15 Z" />
-      <path d="M17 15 L15 21 M17 15 L19 21" />
+    <svg width="50%" height="50%" viewBox="0 0 24 24">
+      <text x="50%" y="50%" dy="0.35em" fill={strokeColor} fontSize="16" fontWeight="900" fontFamily="Inter, sans-serif" textAnchor="middle">WC</text>
     </svg>
   )
 };
@@ -92,7 +67,7 @@ const InteractiveMap = ({ onToggle, isActive }) => {
         {`
           .map-zone {
             position: absolute;
-            background: var(--color-secondary); /* 金色 */
+            background: var(--gradient-gold); /* Champagne Gold Gradient */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -101,6 +76,7 @@ const InteractiveMap = ({ onToggle, isActive }) => {
             box-shadow: var(--shadow-sm);
             z-index: 1;
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.4); /* soft detail */
           }
           .map-zone:hover {
             transform: scale(1.08); /* 放大互動效果 */

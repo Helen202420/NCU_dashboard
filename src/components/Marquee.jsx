@@ -30,17 +30,17 @@ const Marquee = () => {
             display: inline-flex;
             align-items: center;
             gap: 0.6rem;
-            border: 2px solid var(--color-secondary); /* 金色邊框 */
-            border-radius: 999px; /* 每個獨立的圓角框 */
+            border-radius: 999px;
             padding: 0.6rem 2rem;
             color: var(--color-primary-dark);
             font-weight: 800;
             font-size: var(--fs-h3);
 
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(8px);
-            WebkitBackdrop-filter: blur(8px);
-            box-shadow: var(--shadow-sm);
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            WebkitBackdrop-filter: blur(12px);
+            /* Soft shadow with subtle white inner glow for depth */
+            box-shadow: 0 4px 12px rgba(45, 27, 77, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
           }
         `}
       </style>

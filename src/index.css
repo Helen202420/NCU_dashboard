@@ -1,21 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Premium Elegant Theme: Royal Violet & Luminous Gold */
-  --color-primary: #7C3AED;      /* Vibrant Royal Violet */
-  --color-primary-dark: #31115F; /* Deep Indigo Night (High Contrast) */
-  --color-secondary: #FBBF24;    /* Luminous Warm Gold */
-  --color-secondary-dark: #D97706; /* Bronze / Deep Gold */
-  --color-bg: #F8FAFC;           /* Very light gray-blue for background */
+  /* Modern Campus Sports Theme: Deep Purple & Champagne Gold */
+  --color-primary: #2D1B4D;      /* Deep Purple */
+  --color-primary-dark: #2D1B4D; /* Unified Deep Purple */
+  --color-secondary: #E5D3A8;    /* Champagne/Metallic Gold */
+  --color-secondary-dark: #C5A059; /* Deep Gold */
+  --color-bg: #F4F0F8;           /* Light gray with slight purple tint */
   --color-surface: #FFFFFF;      /* White surfaces */
   --color-text-main: #1E293B;    /* Dark slate for readable text */
   --color-text-muted: #64748B;   /* Slate for secondary text */
   
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-glow: 0 0 15px rgba(253, 224, 71, 0.5); /* Yellow glow */
+  --shadow-sm: 0 1px 2px 0 rgba(45, 27, 77, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(45, 27, 77, 0.1), 0 2px 4px -2px rgba(45, 27, 77, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(45, 27, 77, 0.1), 0 4px 6px -4px rgba(45, 27, 77, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(45, 27, 77, 0.1), 0 8px 10px -6px rgba(45, 27, 77, 0.1);
+  --shadow-glow: 0 0 15px rgba(229, 211, 168, 0.3); /* Subtle Gold glow */
+  
+  --gradient-gold: linear-gradient(135deg, #F9F4E5 0%, #E5D3A8 100%);
 
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -56,6 +58,8 @@
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--color-bg);
+  background-image: radial-gradient(rgba(45, 27, 77, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
   color: var(--color-text-main);
   min-height: 100vh;
   overflow-x: hidden;
@@ -64,10 +68,10 @@ body {
 
 /* Glassmorphism panel */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(245, 243, 248, 0.85); /* very light purple base for glass panels */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6); /* soft transparent border */
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }

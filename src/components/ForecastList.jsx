@@ -69,20 +69,21 @@ const ForecastList = () => {
               onMouseLeave={() => setActiveIndex(null)}
               className={`glass-panel ${isActive ? 'text-white' : ''}`}
               style={{ 
-                background: isActive ? '#8576A5' : '',
+                background: isActive ? 'var(--color-primary)' : 'rgba(245, 243, 248, 0.8)',
                 minWidth: '120px', 
                 padding: '2rem 1rem', 
                 display: 'flex', 
                 flexDirection: 'column', 
                 alignItems: 'center', 
                 gap: '1rem',
-                border: isActive ? '2px solid var(--color-secondary)' : '1px solid rgba(0,0,0,0.05)',
+                border: isActive ? '1px solid var(--color-secondary)' : '1px solid rgba(229, 211, 168, 0.4)',
                 position: 'relative',
                 cursor: 'default',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                boxShadow: isActive ? 'var(--shadow-glow)' : 'var(--shadow-sm)'
               }}>
               
-              <div style={{ fontSize: 'var(--fs-small)', fontWeight: 600, color: isActive ? 'rgba(255,255,255,0.8)' : 'var(--color-text-muted)' }}>
+              <div style={{ fontSize: 'var(--fs-small)', fontWeight: 600, color: isActive ? 'rgba(255,255,255,0.9)' : 'var(--color-text-muted)' }}>
 
                 {item.time}
               </div>

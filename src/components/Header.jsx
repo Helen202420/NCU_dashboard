@@ -65,7 +65,7 @@ const Header = () => {
           <p style={{
             fontSize: 'var(--fs-h3)',
             fontWeight: 600,
-            color: '#563D82',
+            color: 'var(--color-primary)',
             marginTop: '0.5rem',
             opacity: 0.75
           }}>
@@ -77,12 +77,12 @@ const Header = () => {
         {/* Live Clock block with Robot Image on the right */}
         <div className="header-widgets">
            <div style={{
-              background: 'rgba(255, 255, 255, 0.85)',
+              background: 'rgba(245, 243, 248, 0.85)',
               backdropFilter: 'blur(10px)',
               padding: '0.75rem 1.5rem',
               borderRadius: '24px', 
               boxShadow: 'var(--shadow-sm)',
-              border: '1px solid rgba(255, 255, 255, 0.5)',
+              border: '1px solid rgba(255, 255, 255, 0.6)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -93,18 +93,18 @@ const Header = () => {
            </div>
            
            <div style={{ padding: '0 0.25rem', display: 'flex', alignItems: 'center' }}>
-             <CustomCompass size={56} color="#8576A5" />
+             <CustomCompass size={56} color="var(--color-primary)" />
            </div>
 
            <div style={{
               width: '64px',
               height: '64px',
               borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.4)',
+              background: 'rgba(245, 243, 248, 0.5)',
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
-              border: '2px solid rgba(255, 255, 255, 0.7)',
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.4)',
+              border: '1px solid rgba(255, 255, 255, 0.7)',
+              boxShadow: '0 8px 16px rgba(45, 27, 77, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.6)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
