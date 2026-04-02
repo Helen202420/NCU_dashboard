@@ -47,12 +47,15 @@ const ForecastList = () => {
   return (
     <div style={{ padding: '0 1rem' }}>
       <div className="flex-between" style={{ marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-primary-dark)' }}>24小時天氣預報</h2>
+        <h2 style={{ fontSize: 'var(--fs-h2)', fontWeight: 800, color: 'var(--color-primary-dark)' }}>24小時天氣預報</h2>
+
         
         {/* Toggle switch */}
         <div style={{ display: 'flex', background: 'white', borderRadius: '20px', padding: '4px', boxShadow: 'var(--shadow-sm)' }}>
-          <div style={{ padding: '0.4rem 1rem', background: 'var(--color-primary-dark)', color: 'white', borderRadius: '16px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}>HOURLY</div>
-          <div style={{ padding: '0.4rem 1rem', color: 'var(--color-text-muted)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}>DAILY</div>
+          <div style={{ padding: '0.4rem 1rem', background: 'var(--color-primary-dark)', color: 'white', borderRadius: '16px', fontSize: 'var(--fs-tiny)', fontWeight: 700, cursor: 'pointer' }}>HOURLY</div>
+
+          <div style={{ padding: '0.4rem 1rem', color: 'var(--color-text-muted)', fontSize: 'var(--fs-tiny)', fontWeight: 700, cursor: 'pointer' }}>DAILY</div>
+
         </div>
       </div>
 
@@ -78,7 +81,8 @@ const ForecastList = () => {
                 transition: 'all 0.3s ease'
               }}>
               
-              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: isActive ? 'rgba(255,255,255,0.8)' : 'var(--color-text-muted)' }}>
+              <div style={{ fontSize: 'var(--fs-small)', fontWeight: 600, color: isActive ? 'rgba(255,255,255,0.8)' : 'var(--color-text-muted)' }}>
+
                 {item.time}
               </div>
               
@@ -86,11 +90,13 @@ const ForecastList = () => {
                 {getIcon(item.icon, isActive)}
               </div>
 
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: isActive ? 'white' : 'var(--color-primary-dark)' }}>
+              <div style={{ fontSize: 'var(--fs-h1)', fontWeight: 800, color: isActive ? 'white' : 'var(--color-primary-dark)' }}>
+
                 {item.temp}
               </div>
               
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: isActive ? 'rgba(255,255,255,0.6)' : 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+              <div style={{ fontSize: 'var(--fs-tiny)', fontWeight: 600, color: isActive ? 'rgba(255,255,255,0.6)' : 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+
                 <CloudRain size={12} /> {item.precip}
               </div>
             </div>

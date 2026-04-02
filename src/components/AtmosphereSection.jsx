@@ -13,9 +13,12 @@ const AtmosphereSection = () => {
   return (
     <div className="glass-panel" style={{ padding: '2rem', height: '400px', display: 'flex', flexDirection: 'column' }}>
       <div>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary-dark)', marginBottom: '0.2rem' }}>Campus Atmosphere</h2>
-        <p className="text-secondary-dark" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-secondary-dark)', letterSpacing: '0.05em' }}>LIVE PERFORMANCE ANALYSIS</p>
+        <h2 style={{ fontSize: 'var(--fs-h2)', fontWeight: 800, color: 'var(--color-primary-dark)', marginBottom: '0.2rem' }}>Campus Atmosphere</h2>
+
+        <p className="text-secondary-dark" style={{ fontSize: 'var(--fs-tiny)', fontWeight: 700, color: 'var(--color-secondary-dark)', letterSpacing: '0.05em' }}>LIVE PERFORMANCE ANALYSIS</p>
+
       </div>
+
 
       <div style={{ flex: 1, marginTop: '1rem', width: '100%', position: 'relative' }}>
         <ResponsiveContainer width="100%" height="100%">

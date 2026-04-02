@@ -79,15 +79,14 @@ const icons = {
 const InteractiveMap = ({ onToggle, isActive }) => {
   return (
     <div 
-      className={`interactive-map ${isActive ? 'active' : ''}`}
       style={{
         width: '100%',
         maxWidth: '1000px',
         position: 'relative',
-        aspectRatio: '16/9', // This ensures coordinates act correctly responsively
-        minHeight: '400px',
+        aspectRatio: '16/9',
         margin: '0 auto',
       }}
+      className={`interactive-map ${isActive ? 'active' : ''}`}
     >
       <style>
         {`
@@ -108,6 +107,15 @@ const InteractiveMap = ({ onToggle, isActive }) => {
             filter: brightness(1.1); /* 變亮效果 */
             box-shadow: var(--shadow-lg);
             z-index: 10;
+          }
+          .interactive-map {
+            min-height: 400px;
+          }
+          @media (max-width: 768px) {
+            .interactive-map {
+              min-height: 250px;
+              aspect-ratio: 4/3; /* Slightly taller aspect ratio for mobile screens */
+            }
           }
           .interactive-map.active .map-zone {
             box-shadow: var(--shadow-glow);

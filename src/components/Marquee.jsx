@@ -35,7 +35,8 @@ const Marquee = () => {
             padding: 0.6rem 2rem;
             color: var(--color-primary-dark);
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: var(--fs-h3);
+
             background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(8px);
             WebkitBackdrop-filter: blur(8px);
@@ -45,15 +46,18 @@ const Marquee = () => {
       </style>
       <div className="marquee-track">
         <div className="message-box">
-          <span style={{ fontSize: '1.4rem' }}>🏃</span>
+          <span style={{ fontSize: 'var(--fs-h2)' }}>🏃</span>
+
           運動前中後，補水不可少
         </div>
         <div className="message-box">
-          <span style={{ fontSize: '1.4rem' }}>🏃</span>
+          <span style={{ fontSize: 'var(--fs-h2)' }}>🏃</span>
+
           注意天氣變化，安全第一
         </div>
         <div className="message-box">
-          <span style={{ fontSize: '1.4rem' }}>🏃</span>
+          <span style={{ fontSize: 'var(--fs-h2)' }}>🏃</span>
+
           熱身做足，運動更安全
         </div>
       </div>

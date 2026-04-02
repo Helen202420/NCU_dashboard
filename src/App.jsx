@@ -28,12 +28,14 @@ const App = () => {
       <main className="dashboard-main">
         {/* Top Section: Map with pop-out panels */}
         <div className="map-and-panels-container">
+          {showPanels && <div className="side-panel-backdrop" onClick={() => setShowPanels(false)}></div>}
           <SidePanels show={showPanels} hasInteracted={hasInteracted} />
           
           <div className="center-map-wrapper">
              <InteractiveMap onToggle={togglePanels} isActive={showPanels} />
           </div>
         </div>
+
 
         {/* Marquee Banner */}
         <div style={{ width: '100%', marginTop: '-1.5rem', marginBottom: '1.5rem', zIndex: 10 }}>

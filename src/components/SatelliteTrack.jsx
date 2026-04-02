@@ -23,11 +23,12 @@ const SatelliteTrack = () => {
       <div style={{ position: 'relative', zIndex: 1, padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div>
            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#F8FAFC' }}>Satellite Track</h2>
+              <h2 style={{ fontSize: 'var(--fs-h2)', fontWeight: 700, color: '#F8FAFC' }}>Satellite Track</h2>
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-secondary)' }}></div>
            </div>
-           <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94A3B8', letterSpacing: '0.05em', marginTop: '0.2rem' }}>ORBITAL CLOUD ANALYSIS</p>
+           <p style={{ fontSize: 'var(--fs-tiny)', fontWeight: 600, color: '#94A3B8', letterSpacing: '0.05em', marginTop: '0.2rem' }}>ORBITAL CLOUD ANALYSIS</p>
         </div>
+
 
         <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
            <button style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(4px)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>
