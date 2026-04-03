@@ -75,53 +75,17 @@ const Header = () => {
         </div>
 
         {/* Live Clock block with Robot Image on the right */}
-        <div className="header-widgets" style={{ gap: '1.2rem' }}>
-           <div style={{
-              background: 'white',
-              backdropFilter: 'blur(10px)',
-              padding: '1rem 2rem',
-              borderRadius: '30px', 
-              boxShadow: '0 8px 16px rgba(45, 27, 77, 0.08)',
-              border: '2px solid rgba(255, 255, 255, 0.9)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center'
-           }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.05em', marginBottom: '0.3rem' }}>CAMPUS TIME</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-primary-dark)', fontFamily: 'monospace' }}>{timeString}</div>
+        <div className="header-widgets">
+           <div className="widget-time">
+              <div className="widget-time-label">CAMPUS TIME</div>
+              <div className="widget-time-value">{timeString}</div>
            </div>
            
-           <div style={{ 
-              width: '92px', 
-              height: '92px', 
-              borderRadius: '50%',
-              background: 'white',
-              border: '2px solid rgba(255, 255, 255, 0.9)',
-              boxShadow: '0 8px 16px rgba(45, 27, 77, 0.12)',
-              display: 'flex', 
-              alignItems: 'center',
-              justifyContent: 'center'
-           }}>
-             <CustomCompass size={74} color="var(--color-primary)" />
+           <div className="widget-circle">
+             <CustomCompass size="80%" color="var(--color-primary)" />
            </div>
 
-           <div style={{
-              width: '92px',
-              height: '92px',
-              borderRadius: '50%',
-              background: 'white',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              border: '2px solid rgba(255, 255, 255, 0.9)',
-              boxShadow: '0 8px 16px rgba(45, 27, 77, 0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              overflow: 'hidden',
-              padding: '8px'
-           }}>
-
+           <div className="widget-circle widget-circle-padded" style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
              <img 
                 src="/robot.png" 
                 alt="NCU Mascot" 
