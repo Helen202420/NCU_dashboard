@@ -9,15 +9,18 @@ import Marquee from './components/Marquee';
 import './App.css';
 
 const App = () => {
-  // Use user's preference for initial state: hidden before first click
   const [showPanels, setShowPanels] = useState(false);
-  // Track if interaction has happened so we don't play animation on mount
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState(null);
 
-  // Auto hide panels after some time for an interactive feel, or just keep them togglable
-  // We'll keep them togglable
-  const togglePanels = () => {
-    setShowPanels(prev => !prev);
+  const handleSelectVenue = (venue) => {
+    // If clicking the same venue that is already open, toggle it off
+    if (showPanels && selectedVenue?.id === venue.id) {
+      setShowPanels(false);
+    } else {
+      setSelectedVenue(venue);
+      setShowPanels(true);
+    }
     setHasInteracted(true);
   };
 
@@ -29,16 +32,21 @@ const App = () => {
         {/* Top Section: Map with pop-out panels */}
         <div className="map-and-panels-container">
           {showPanels && <div className="side-panel-backdrop" onClick={() => setShowPanels(false)}></div>}
-          <SidePanels show={showPanels} hasInteracted={hasInteracted} />
+          <SidePanels 
+            show={showPanels} 
+            hasInteracted={hasInteracted} 
+            venue={selectedVenue} 
+            onClose={() => setShowPanels(false)}
+          />
           
           <div className="center-map-wrapper">
-             <InteractiveMap onToggle={togglePanels} isActive={showPanels} />
+             <InteractiveMap onSelectVenue={handleSelectVenue} isActive={showPanels} />
           </div>
         </div>
 
 
         {/* Marquee Banner */}
-        <div style={{ width: '100%', marginTop: '-1.5rem', marginBottom: '1.5rem', zIndex: 10 }}>
+        <div style={{ width: '100%', marginTop: '1.5rem', marginBottom: '1.5rem', zIndex: 10 }}>
            <Marquee />
         </div>
 

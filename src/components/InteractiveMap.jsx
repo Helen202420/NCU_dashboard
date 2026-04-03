@@ -20,19 +20,19 @@ const icons = {
     <svg width="45%" height="55%" viewBox="0 0 24 24" stroke={strokeColor} strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'translateX(-2px)' }}>
       {/* Head */}
       <circle cx="16" cy="3.5" r="2.2" fill={strokeColor} stroke="none" />
-      
+
       {/* Right Arm (forward, bent up) */}
       <path d="M 13.5 7.5 L 17 10 L 20.5 5" fill="none" />
-      
+
       {/* Left Arm (backward, swept left and down) */}
       <path d="M 13.5 7.5 L 9 10 L 5 12" fill="none" />
-      
+
       {/* Torso */}
       <path d="M 13.5 7.5 L 11 14" fill="none" />
-      
+
       {/* Right Leg (front knee bent, leg down) */}
       <path d="M 11 14 L 15 17.5 L 12 22.5" fill="none" />
-      
+
       {/* Left Leg (back, foot swept high) */}
       <path d="M 11 14 L 7 17.5 L 2 15" fill="none" />
     </svg>
@@ -45,15 +45,26 @@ const icons = {
     </svg>
   ),
   restroom: (
-    <svg width="50%" height="50%" viewBox="0 0 24 24">
-      <text x="50%" y="50%" dy="0.35em" fill={strokeColor} fontSize="16" fontWeight="900" fontFamily="Inter, sans-serif" textAnchor="middle">WC</text>
+    <svg width="60%" height="60%" viewBox="0 0 24 24" overflow="visible">
+      <text x="50%" y="54%" dy="0.35em" fill={strokeColor} fontSize="14" fontWeight="900" fontFamily="Inter, sans-serif" textAnchor="middle">WC</text>
     </svg>
   )
 };
 
-const InteractiveMap = ({ onToggle, isActive }) => {
+const InteractiveMap = ({ onSelectVenue, isActive }) => {
+  const venues = {
+    track: { id: 'track', name: '操場環境', type: 'outdoor', deviceId: 'device_4' },
+    indoorBB: { id: 'indoor_bb', name: '室內籃球場環境', type: 'indoor', deviceId: 'device_1' },
+    indoorVB: { id: 'indoor_vb', name: '室內排球場環境', type: 'indoor', deviceId: 'device_2' },
+    outdoorBB: { id: 'outdoor_bb', name: '室外籃球場環境', type: 'outdoor', deviceId: 'device_6' },
+    outdoorVB: { id: 'outdoor_vb', name: '室外排球場環境', type: 'outdoor', deviceId: 'device_7' },
+    tennis: { id: 'tennis', name: '室外網球場環境', type: 'outdoor', deviceId: 'ab170023' },
+    wc: { id: 'wc', name: '洗手間環境', type: 'outdoor', deviceId: 'device_3' },
+    outdoorBB2: { id: 'outdoor_bb_2', name: '室外籃球場環境', type: 'outdoor', deviceId: 'device_8' }
+  };
+
   return (
-    <div 
+    <div
       style={{
         width: '100%',
         maxWidth: '1000px',
@@ -67,7 +78,7 @@ const InteractiveMap = ({ onToggle, isActive }) => {
         {`
           .map-zone {
             position: absolute;
-            background: var(--gradient-gold); /* Champagne Gold Gradient */
+            background: var(--gradient-gold); /* Default Outdoor Gold */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -75,12 +86,17 @@ const InteractiveMap = ({ onToggle, isActive }) => {
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease, box-shadow 0.3s ease;
             box-shadow: var(--shadow-sm);
             z-index: 1;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.4); /* soft detail */
+            overflow: visible;
+            border: 1px solid rgba(255,255,255,0.4);
+          }
+          .map-zone.indoor {
+            background: #B192D4; /* Solid Lavender/Purple */
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.4);
           }
           .map-zone:hover {
-            transform: scale(1.08); /* 放大互動效果 */
-            filter: brightness(1.1); /* 變亮效果 */
+            transform: scale(1.08);
+            filter: brightness(1.1);
             box-shadow: var(--shadow-lg);
             z-index: 10;
           }
@@ -100,7 +116,7 @@ const InteractiveMap = ({ onToggle, isActive }) => {
       </style>
 
       {/* Center Huge Oval (Runner/Track) */}
-      <div className="map-zone" onClick={onToggle} style={{
+      <div className="map-zone" onClick={() => onSelectVenue(venues.track)} style={{
         left: '30%', top: '5%', width: '38%', height: '70%', borderRadius: '50%'
       }}>
         {icons.runner}
@@ -108,29 +124,29 @@ const InteractiveMap = ({ onToggle, isActive }) => {
 
       {/* === LEFT SIDE === */}
 
-      {/* Top Left (Basketball) */}
-      <div className="map-zone" onClick={onToggle} style={{
+      {/* Top Left (Basketball) - Indoor */}
+      <div className="map-zone indoor" onClick={() => onSelectVenue(venues.indoorBB)} style={{
         left: '8%', top: '5%', width: '13%', height: '28%', borderRadius: '4px'
       }}>
         {icons.basketball}
       </div>
 
-      {/* Middle Left (Volleyball) */}
-      <div className="map-zone" onClick={onToggle} style={{
+      {/* Middle Left (Volleyball) - Indoor */}
+      <div className="map-zone indoor" onClick={() => onSelectVenue(venues.indoorVB)} style={{
         left: '8%', top: '37%', width: '13%', height: '28%', borderRadius: '4px'
       }}>
         {icons.volleyball}
       </div>
 
-      {/* Bottom Left (Basketball) */}
-      <div className="map-zone" onClick={onToggle} style={{
+      {/* Bottom Left (Basketball) - Outdoor */}
+      <div className="map-zone" onClick={() => onSelectVenue(venues.outdoorBB2)} style={{
         left: '5%', top: '70%', width: '12%', height: '24%', borderRadius: '4px'
       }}>
         {icons.basketball}
       </div>
 
-      {/* Bottom Left Small (Restroom) */}
-      <div className="map-zone" onClick={onToggle} style={{
+      {/* Bottom Left Small (Restroom) - Outdoor */}
+      <div className="map-zone" onClick={() => onSelectVenue(venues.wc)} style={{
         left: '18%', top: '69%', width: '7%', height: '12%', borderRadius: '2px'
       }}>
         {icons.restroom}
@@ -138,15 +154,15 @@ const InteractiveMap = ({ onToggle, isActive }) => {
 
       {/* === RIGHT SIDE === */}
 
-      {/* Top Right (Basketball) */}
-      <div className="map-zone" onClick={onToggle} style={{
+      {/* Top Right (Basketball) - Outdoor */}
+      <div className="map-zone" onClick={() => onSelectVenue(venues.outdoorBB)} style={{
         left: '78%', top: '15%', width: '13%', height: '40%', borderRadius: '4px'
       }}>
         {icons.basketball}
       </div>
 
-      {/* Bottom Right (Volleyball) */}
-      <div className="map-zone" onClick={onToggle} style={{
+      {/* Bottom Right (Volleyball) - Outdoor */}
+      <div className="map-zone" onClick={() => onSelectVenue(venues.outdoorVB)} style={{
         left: '78%', top: '60%', width: '13%', height: '30%', borderRadius: '4px'
       }}>
         {icons.volleyball}
@@ -154,8 +170,8 @@ const InteractiveMap = ({ onToggle, isActive }) => {
 
       {/* === BOTTOM === */}
 
-      {/* Bottom Center (Tennis) */}
-      <div className="map-zone" onClick={onToggle} style={{
+      {/* Bottom Center (Tennis) - Outdoor */}
+      <div className="map-zone" onClick={() => onSelectVenue(venues.tennis)} style={{
         left: '28%', top: '83%', width: '46%', height: '16%', borderRadius: '4px'
       }}>
         {icons.tennis}

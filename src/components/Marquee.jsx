@@ -36,7 +36,7 @@ const Marquee = () => {
             font-weight: 800;
             font-size: var(--fs-h3);
 
-            background: rgba(255, 255, 255, 0.65);
+            background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(12px);
             WebkitBackdrop-filter: blur(12px);
             /* Soft shadow with subtle white inner glow for depth */
