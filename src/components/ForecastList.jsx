@@ -28,15 +28,44 @@ const ForecastList = () => {
       try {
         setLoading(true);
         
-        // Use proxied endpoint in development, full URL in production
-        const apiUrl = import.meta.env.DEV 
-          ? '/api/forecast-hourly'
-          : 'https://ncu-niag-weather-detect.vercel.app/api/forecast-hourly';
+        // Try multiple API endpoints (with fallback)
+        const apiUrls = [
+          'https://ncu-niag-weather-detect.vercel.app/api/forecast-hourly',
+          '/api/forecast-hourly' // Fallback to relative path if backend proxy exists
+        ];
         
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
-        
-        const data = await response.json();
+        let lastError = null;
+        let data = null;
+
+        for (const apiUrl of apiUrls) {
+          try {
+            console.log(`Fetching from: ${apiUrl}`);
+            const response = await fetch(apiUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+              },
+              mode: 'cors'
+            });
+            
+            if (!response.ok) {
+              lastError = `HTTP ${response.status}`;
+              continue;
+            }
+            
+            data = await response.json();
+            console.log('Successfully fetched weather data:', data);
+            break;
+          } catch (e) {
+            lastError = e.message;
+            console.warn(`Failed to fetch from ${apiUrl}:`, e);
+            // Try next URL
+          }
+        }
+
+        if (!data) {
+          throw new Error(`Failed to fetch from any endpoint. Last error: ${lastError}`);
+        }
         
         // Parse API data: convert string values to appropriate types
         const parsedData = (data || []).map(item => ({
@@ -51,7 +80,7 @@ const ForecastList = () => {
 
       } catch (err) {
         console.error('Error fetching weather data:', err);
-        setError(err.message);
+        setError(err.message || 'Failed to load forecast data');
       } finally {
         setLoading(false);
       }
