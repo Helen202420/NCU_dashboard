@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabaseClient';
 
 const API_BASE = 'https://box-sigma-ten.vercel.app/sensor/latest';
 
-const MetricOverlay = ({ label, value, unit, icon: Icon, historyData, onToggleHistory, isActive, isOutdoor }) => {
+const MetricOverlay = ({ label, value, unit, icon: Icon, historyData, onToggleHistory, isActive, isOutdoor, dataKey, metricType }) => {
   const chartData = useMemo(() => {
     // Generate the last 14 hours (HH:00) ending at the current hour
     const now = new Date();
@@ -23,7 +23,7 @@ const MetricOverlay = ({ label, value, unit, icon: Icon, historyData, onToggleHi
 
     if (!historyData || historyData.length === 0) return slots;
 
-    // Map existing history data to the slots
+    // Map existing history data to the slots using the explicit dataKey prop
     const result = slots.map(slot => {
       const match = historyData.find(d => {
         const dDate = new Date(isOutdoor ? d.obs_time : d.device_time);
@@ -31,32 +31,22 @@ const MetricOverlay = ({ label, value, unit, icon: Icon, historyData, onToggleHi
       });
 
       if (match) {
-        let labelKey;
-        if (isOutdoor) {
-          labelKey = label === '溫度' ? 'temperature' : label === '相對濕度' ? 'humidity' : 'uv_index';
-        } else {
-          labelKey = label === '溫度' ? 'temperature' : label === '濕度' ? 'humidity' : label === 'PM2.5' ? 'pm25' : 'pm10';
-        }
-        const val = match[labelKey];
+        const val = match[dataKey];
         return { ...slot, value: val === -99 ? null : val };
       }
       return slot;
     });
 
     return result;
-  }, [historyData, label, isOutdoor]);
+  }, [historyData, dataKey, isOutdoor]);
 
   const yConfig = useMemo(() => {
-    const isTemp = label.includes('溫度');
-    const isHumid = label.includes('濕度');
-    const isUV = label.includes('紫外線');
-
-    if (isTemp) return { domain: [10, 40], ticks: [10, 15, 20, 25, 30, 35, 40] };
-    if (isHumid) return { domain: [0, 100], ticks: [0, 20, 40, 60, 80, 100] };
-    if (isUV) return { domain: [0, 15], ticks: [0, 3, 6, 9, 12, 15] };
-    // PM2.5/PM10
+    if (metricType === 'temperature') return { domain: [10, 40], ticks: [10, 15, 20, 25, 30, 35, 40] };
+    if (metricType === 'humidity')    return { domain: [0, 100], ticks: [0, 20, 40, 60, 80, 100] };
+    if (metricType === 'uv')          return { domain: [0, 15],  ticks: [0, 3, 6, 9, 12, 15] };
+    // PM2.5 / PM10
     return { domain: [0, 150], ticks: [0, 30, 60, 90, 120, 150] };
-  }, [label]);
+  }, [metricType]);
 
   const displayValue = value === -99 ? '偵測中' : (value ?? '--');
 
@@ -235,31 +225,27 @@ const VenuePanel = ({ venue, show, hasInteracted, onClose }) => {
 
           if (rtErr) throw rtErr;
 
-          // History for charts (limit 100 to extract hourly samples)
+          // History: fetch data for the last 14 hours using a time range filter
+          const fourteenHoursAgo = new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString();
           const { data: histRes, error: histErr } = await supabase
             .from('weather_logs')
             .select('*')
-            .order('obs_time', { ascending: false })
-            .limit(100);
+            .gte('obs_time', fourteenHoursAgo)
+            .order('obs_time', { ascending: true });
 
           if (histErr) throw histErr;
 
-          // Hourly Sampling Logic
-          const sampledHistory = [];
-          if (histRes) {
-            const seenHours = new Set();
-            histRes.forEach(item => {
-              const hourKey = item.obs_time.substring(0, 13); // '2024-04-03 14'
-              if (!seenHours.has(hourKey)) {
-                sampledHistory.push(item);
-                seenHours.add(hourKey);
-              }
-            });
-          }
+          // Deduplicate by obs_time - each hourly slot should appear only once
+          const seen = new Set();
+          const dedupedHistory = (histRes || []).filter(d => {
+            if (seen.has(d.obs_time)) return false;
+            seen.add(d.obs_time);
+            return d.temperature !== -99 && d.humidity !== -99;
+          });
 
           return {
             rtData: rtRes?.[0] || null,
-            histData: sampledHistory.reverse()
+            histData: dedupedHistory
           };
         } catch (err) {
           console.error('Outdoor Supabase fetch error:', err);
@@ -354,41 +340,48 @@ const VenuePanel = ({ venue, show, hasInteracted, onClose }) => {
             <>
               <MetricOverlay
                 label="溫度" value={realTime?.temperature} unit="°" icon={Thermometer}
-                historyData={history} isActive={activeMetric === '體感溫度'} isOutdoor={false}
-                onToggleHistory={() => setActiveMetric(prev => prev === '體感溫度' ? null : '體感溫度')}
+                dataKey="temperature" metricType="temperature"
+                historyData={history} isActive={activeMetric === 'temperature'} isOutdoor={false}
+                onToggleHistory={() => setActiveMetric(prev => prev === 'temperature' ? null : 'temperature')}
               />
               <MetricOverlay
                 label="濕度" value={realTime?.humidity} unit="%" icon={Droplets}
-                historyData={history} isActive={activeMetric === '濕度'} isOutdoor={false}
-                onToggleHistory={() => setActiveMetric(prev => prev === '濕度' ? null : '濕度')}
+                dataKey="humidity" metricType="humidity"
+                historyData={history} isActive={activeMetric === 'humidity_in'} isOutdoor={false}
+                onToggleHistory={() => setActiveMetric(prev => prev === 'humidity_in' ? null : 'humidity_in')}
               />
               <MetricOverlay
                 label="PM2.5" value={realTime?.pm25} unit="µg/m³" icon={CloudFog}
-                historyData={history} isActive={activeMetric === 'PM2.5'} isOutdoor={false}
-                onToggleHistory={() => setActiveMetric(prev => prev === 'PM2.5' ? null : 'PM2.5')}
+                dataKey="pm25" metricType="pm25"
+                historyData={history} isActive={activeMetric === 'pm25'} isOutdoor={false}
+                onToggleHistory={() => setActiveMetric(prev => prev === 'pm25' ? null : 'pm25')}
               />
               <MetricOverlay
                 label="PM10" value={realTime?.pm10} unit="µg/m³" icon={CloudFog}
-                historyData={history} isActive={activeMetric === 'PM10'} isOutdoor={false}
-                onToggleHistory={() => setActiveMetric(prev => prev === 'PM10' ? null : 'PM10')}
+                dataKey="pm10" metricType="pm10"
+                historyData={history} isActive={activeMetric === 'pm10'} isOutdoor={false}
+                onToggleHistory={() => setActiveMetric(prev => prev === 'pm10' ? null : 'pm10')}
               />
             </>
           ) : (
             <>
               <MetricOverlay
-                label="溫度" value={realTime?.temperature} unit="°C" icon={Thermometer}
-                historyData={history} isActive={activeMetric === '實測溫度'} isOutdoor={true}
-                onToggleHistory={() => setActiveMetric(prev => prev === '實測溫度' ? null : '實測溫度')}
+                label="實測溫度" value={realTime?.temperature} unit="°C" icon={Thermometer}
+                dataKey="temperature" metricType="temperature"
+                historyData={history} isActive={activeMetric === 'temperature'} isOutdoor={true}
+                onToggleHistory={() => setActiveMetric(prev => prev === 'temperature' ? null : 'temperature')}
               />
               <MetricOverlay
-                label="濕度" value={realTime?.humidity} unit="%" icon={Droplets}
-                historyData={history} isActive={activeMetric === '相對濕度'} isOutdoor={true}
-                onToggleHistory={() => setActiveMetric(prev => prev === '相對濕度' ? null : '相對濕度')}
+                label="相對濕度" value={realTime?.humidity} unit="%" icon={Droplets}
+                dataKey="humidity" metricType="humidity"
+                historyData={history} isActive={activeMetric === 'humidity_out'} isOutdoor={true}
+                onToggleHistory={() => setActiveMetric(prev => prev === 'humidity_out' ? null : 'humidity_out')}
               />
               <MetricOverlay
                 label="紫外線指數" value={realTime?.uv_index} unit="" icon={Sun}
-                historyData={history} isActive={activeMetric === '紫外線指數'} isOutdoor={true}
-                onToggleHistory={() => setActiveMetric(prev => prev === '紫外線指數' ? null : '紫外線指數')}
+                dataKey="uv_index" metricType="uv"
+                historyData={history} isActive={activeMetric === 'uv'} isOutdoor={true}
+                onToggleHistory={() => setActiveMetric(prev => prev === 'uv' ? null : 'uv')}
               />
             </>
           )}
