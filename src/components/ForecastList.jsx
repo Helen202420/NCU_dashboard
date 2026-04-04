@@ -1,86 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Cloud, CloudRain, CloudLightning, CloudDrizzle, Droplets, Umbrella } from 'lucide-react';
+import { Sun, Cloud, CloudRain, CloudLightning, Droplets } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
 
 const ForecastList = () => {
   const [weatherData, setWeatherData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Icon mapping based on Chinese weather status
-  const getWeatherIcon = (status) => {
-    if (!status) return Cloud;
-    
-    const statusLower = status.toLowerCase();
-    
-    if (statusLower.includes('雷雨') || statusLower.includes('陣雨')) {
-      // Prefer CloudLightning if "雷雨", else CloudRain for "陣雨"
-      return statusLower.includes('雷雨') ? CloudLightning : CloudRain;
-    }
-    if (statusLower.includes('陰')) return Cloud;
-    if (statusLower.includes('晴')) return Sun;
-    if (statusLower.includes('短暫陣雨')) return CloudDrizzle;
-    
-    return Cloud; // Default fallback
-  };
-
   useEffect(() => {
     const fetchWeatherData = async () => {
       try {
         setLoading(true);
         
-        // Try multiple API endpoints (with fallback)
-        const apiUrls = [
-          'https://ncu-niag-weather-detect.vercel.app/api/forecast-hourly',
-          '/api/forecast-hourly' // Fallback to relative path if backend proxy exists
-        ];
+        const now = new Date();
+        const todayDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
         
-        let lastError = null;
-        let data = null;
+        console.log('Fetching weather for date:', todayDate);
 
-        for (const apiUrl of apiUrls) {
+        const { data, error } = await supabase
+          .from('weather_logs')
+          .select('*')
+          .ilike('obs_time', `${todayDate}%`)
+          .order('obs_time', { ascending: true });
+
+        if (error) throw error;
+        
+        // Deduplicate: Keep only the first record for each unique hour
+        const hourlyMap = new Map();
+        (data || []).forEach(record => {
+          // Extract hour from obs_time (e.g., "2026-04-03 06:15:00" -> "06")
+          // Assuming the format is strictly YYYY-MM-DD HH:mm:ss or similar
           try {
-            console.log(`Fetching from: ${apiUrl}`);
-            const response = await fetch(apiUrl, {
-              method: 'GET',
-              headers: {
-                'Accept': 'application/json',
-              },
-              mode: 'cors'
-            });
+            const timePart = record.obs_time.split(' ')[1]; // "06:15:00"
+            const hour = timePart.split(':')[0]; // "06"
             
-            if (!response.ok) {
-              lastError = `HTTP ${response.status}`;
-              continue;
+            if (!hourlyMap.has(hour)) {
+              hourlyMap.set(hour, record);
             }
-            
-            data = await response.json();
-            console.log('Successfully fetched weather data:', data);
-            break;
           } catch (e) {
-            lastError = e.message;
-            console.warn(`Failed to fetch from ${apiUrl}:`, e);
-            // Try next URL
+            // Fallback for different formats
+            const hour = record.obs_time.substring(11, 13);
+            if (hour && !hourlyMap.has(hour)) {
+              hourlyMap.set(hour, record);
+            }
           }
-        }
+        });
 
-        if (!data) {
-          throw new Error(`Failed to fetch from any endpoint. Last error: ${lastError}`);
-        }
-        
-        // Parse API data: convert string values to appropriate types
-        const parsedData = (data || []).map(item => ({
-          ...item,
-          temp: parseInt(item.temp, 10) || 0,
-          humidity: parseInt(item.humidity, 10) || 0,
-          pop: parseInt(item.pop, 10) || 0,
-          time: item.time || '--:--'
-        }));
-        
-        setWeatherData(parsedData);
+        const hourlyData = Array.from(hourlyMap.values());
+        setWeatherData(hourlyData);
 
       } catch (err) {
         console.error('Error fetching weather data:', err);
-        setError(err.message || 'Failed to load forecast data');
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -88,6 +59,21 @@ const ForecastList = () => {
 
     fetchWeatherData();
   }, []);
+
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '--:--';
+    // Assuming obs_time is a string like "2026-04-03 11:00:00" or similar
+    try {
+      const date = new Date(timeStr.replace(' ', 'T')); // Convert to ISO-like if needed
+      if (isNaN(date.getTime())) {
+        // Fallback: if it's just "HH:mm:ss"
+        return timeStr.split(':').slice(0, 2).join(':');
+      }
+      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    } catch (e) {
+      return timeStr.substring(0, 5);
+    }
+  };
 
   if (loading) {
     return (
@@ -108,25 +94,28 @@ const ForecastList = () => {
   return (
     <div style={{ padding: '0 1rem' }}>
       <div className="flex-between" style={{ marginBottom: '1.5rem' }}>
-        <h2 className="forecast-title" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-primary-dark)' }}>24小時天氣預報</h2>
+        <h2 style={{ fontSize: 'var(--fs-h2)', fontWeight: 800, color: 'var(--color-primary-dark)' }}>24小時天氣預報</h2>
+        
+        <div style={{ display: 'flex', background: 'white', borderRadius: '20px', padding: '4px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ padding: '0.4rem 1rem', background: 'var(--color-primary-dark)', color: 'white', borderRadius: '16px', fontSize: 'var(--fs-tiny)', fontWeight: 700, cursor: 'pointer' }}>HOURLY</div>
+          <div style={{ padding: '0.4rem 1rem', color: 'var(--color-text-muted)', fontSize: 'var(--fs-tiny)', fontWeight: 700, cursor: 'pointer' }}>DAILY</div>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1.5rem', WebkitOverflowScrolling: 'touch', minHeight: '360px' }}>
+      <div style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1.5rem', WebkitOverflowScrolling: 'touch', minHeight: '280px' }}>
         {weatherData.map((item, i) => {
-          const WeatherIcon = getWeatherIcon(item.status);
           return (
             <div 
-              key={i} 
+              key={item.id || i} 
               className="glass-panel text-white"
               style={{ 
                 background: 'var(--color-primary)',
-                minWidth: '200px', 
-                minHeight: '320px',
-                padding: '1.8rem 1.4rem', 
+                minWidth: '150px', 
+                padding: '1.8rem 1.2rem', 
                 display: 'flex', 
                 flexDirection: 'column', 
                 alignItems: 'center', 
-                justifyContent: 'space-between',
+                gap: '0.8rem',
                 border: '1px solid rgba(229, 211, 168, 0.4)',
                 position: 'relative',
                 cursor: 'default',
@@ -135,90 +124,41 @@ const ForecastList = () => {
                 borderRadius: '24px'
               }}>
               
-              {/* ===== LAYER 1: Time (Top) ===== */}
-              <div style={{ 
-                fontSize: '0.85rem', 
-                fontWeight: 300, 
-                color: 'rgba(200, 180, 220, 0.9)',
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-                marginBottom: '0.5rem'
-              }}>
-                {item.time}
+              {/* Time */}
+              <div style={{ fontSize: 'var(--fs-small)', fontWeight: 700, color: 'rgba(255,255,255,0.8)', marginBottom: '0.2rem' }}>
+                {formatTime(item.obs_time)}
               </div>
               
-              {/* ===== LAYER 2: Weather Core (Icon + Status) ===== */}
+              {/* UV Index */}
               <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                gap: '0.6rem',
-                padding: '0.8rem 0'
-              }}>
-                {/* Weather Icon */}
-                <div style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <WeatherIcon size={40} color="var(--color-secondary)" strokeWidth={1.5} />
-                </div>
-                
-                {/* Status Text */}
-                <div style={{ 
-                  fontSize: '0.9rem', 
-                  fontWeight: 600, 
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  textAlign: 'center',
-                  lineHeight: '1.2'
-                }}>
-                  {item.status || 'N/A'}
-                </div>
-              </div>
-
-              {/* ===== LAYER 3: Main Data (Temperature + Rain Probability) ===== */}
-              <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                gap: '1rem',
-                padding: '1rem 0'
-              }}>
-                {/* Temperature - Very Large & Bold */}
-                <div style={{ 
-                  fontSize: '2.8rem', 
-                  fontWeight: 800, 
-                  color: 'rgba(255, 255, 255, 1)',
-                  lineHeight: '1'
-                }}>
-                  {item.temp}°
-                </div>
-
-                {/* Rain Probability - Bright Blue */}
-                <div style={{ 
-                  fontSize: '0.95rem', 
-                  fontWeight: 600, 
-                  color: '#60A5FA',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.4rem',
-                  backgroundColor: 'rgba(96, 165, 250, 0.1)',
-                  padding: '0.4rem 0.8rem',
-                  borderRadius: '8px'
-                }}>
-                  <Umbrella size={18} color="#60A5FA" strokeWidth={2} />
-                  {item.pop}%
-                </div>
-              </div>
-
-              {/* ===== LAYER 4: Environment Details (Bottom) ===== */}
-              <div style={{ 
-                fontSize: '0.8rem', 
-                fontWeight: 400, 
-                color: 'rgba(200, 180, 220, 0.8)', 
+                fontSize: 'var(--fs-tiny)', 
+                fontWeight: 800, 
+                color: 'var(--color-secondary)', 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '0.3rem',
-                marginTop: '0.5rem'
+                background: 'rgba(229, 211, 168, 0.15)',
+                padding: '0.3rem 0.6rem',
+                borderRadius: '12px'
               }}>
-                <Droplets size={14} color="rgba(200, 180, 220, 0.8)" strokeWidth={2} />
-                RH {item.humidity}%
+                <Sun size={14} fill="var(--color-secondary)" /> UV {item.uv_index?.toFixed(1) || '0.0'}
+              </div>
+
+              {/* Temperature */}
+              <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'white', margin: '0.5rem 0' }}>
+                {Math.round(item.temperature || 0)}°
+              </div>
+              
+              {/* Humidity */}
+              <div style={{ 
+                fontSize: 'var(--fs-small)', 
+                fontWeight: 600, 
+                color: 'rgba(255,255,255,0.7)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.4rem' 
+              }}>
+                <Droplets size={16} color="var(--color-secondary)" /> {item.humidity || 0}%
               </div>
             </div>
           );
