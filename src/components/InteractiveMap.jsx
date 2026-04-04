@@ -86,8 +86,8 @@ const InteractiveMap = ({ onSelectVenue, isActive }) => {
             max-width: 60%;
             max-height: 60%;
             object-fit: contain;
-            /* Filter to turn black (#000000) to Deep Purple (#2D1B4D) */
-            filter: invert(12%) sepia(48%) saturate(4552%) hue-rotate(252deg) brightness(91%) contrast(105%);
+            /* Deep Purple (#2D1B4D) - cross-browser stable (avoids iOS Safari hue-rotate artifact) */
+            filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(1800%) hue-rotate(243deg) brightness(72%);
             transition: transform 0.3s ease;
           }
           .map-zone:hover .map-icon {
