@@ -1,43 +1,82 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Thermometer, Droplets, CloudFog, Activity, X } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { Thermometer, Droplets, CloudFog, Activity, X, Sun } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { supabase } from '../lib/supabaseClient';
 
 const API_BASE = 'https://box-sigma-ten.vercel.app/sensor/latest';
 
-const MetricOverlay = ({ label, value, unit, icon: Icon, historyData, onToggleHistory, isActive }) => {
+const MetricOverlay = ({ label, value, unit, icon: Icon, historyData, onToggleHistory, isActive, isOutdoor }) => {
   const chartData = useMemo(() => {
-    if (!historyData || historyData.length === 0) return [];
-    return historyData.map(d => ({
-      time: new Date(d.device_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
-      value: d[label === '體感溫度' ? 'temperature' : label === '濕度' ? 'humidity' : label === 'PM2.5' ? 'pm25' : 'pm10']
-    }));
-  }, [historyData, label]);
+    // Generate the last 14 hours (HH:00) ending at the current hour
+    const now = new Date();
+    const slots = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(now);
+      d.setHours(d.getHours() - i, 0, 0, 0);
+      slots.push({
+        time: d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        rawHour: d.getHours(),
+        rawDate: d.getDate(),
+        value: null
+      });
+    }
 
-  const yDomain = useMemo(() => {
-    if (chartData.length === 0) return ['auto', 'auto'];
-    const vals = chartData.map(d => d.value).filter(v => v !== null && v !== undefined);
-    if (vals.length === 0) return ['auto', 'auto'];
-    return [Math.min(...vals) - 1, Math.max(...vals) + 1];
-  }, [chartData]);
+    if (!historyData || historyData.length === 0) return slots;
+
+    // Map existing history data to the slots
+    const result = slots.map(slot => {
+      const match = historyData.find(d => {
+        const dDate = new Date(isOutdoor ? d.obs_time : d.device_time);
+        return dDate.getHours() === slot.rawHour && dDate.getDate() === slot.rawDate;
+      });
+
+      if (match) {
+        let labelKey;
+        if (isOutdoor) {
+          labelKey = label === '溫度' ? 'temperature' : label === '相對濕度' ? 'humidity' : 'uv_index';
+        } else {
+          labelKey = label === '溫度' ? 'temperature' : label === '濕度' ? 'humidity' : label === 'PM2.5' ? 'pm25' : 'pm10';
+        }
+        const val = match[labelKey];
+        return { ...slot, value: val === -99 ? null : val };
+      }
+      return slot;
+    });
+
+    return result;
+  }, [historyData, label, isOutdoor]);
+
+  const yConfig = useMemo(() => {
+    const isTemp = label.includes('溫度');
+    const isHumid = label.includes('濕度');
+    const isUV = label.includes('紫外線');
+
+    if (isTemp) return { domain: [10, 40], ticks: [10, 15, 20, 25, 30, 35, 40] };
+    if (isHumid) return { domain: [0, 100], ticks: [0, 20, 40, 60, 80, 100] };
+    if (isUV) return { domain: [0, 15], ticks: [0, 3, 6, 9, 12, 15] };
+    // PM2.5/PM10
+    return { domain: [0, 150], ticks: [0, 30, 60, 90, 120, 150] };
+  }, [label]);
+
+  const displayValue = value === -99 ? '偵測中' : (value ?? '--');
 
   return (
     <div style={{ marginBottom: '1.2rem', padding: '0.4rem 0' }}>
       <div className="flex-between" style={{ cursor: 'pointer' }} onClick={onToggleHistory}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div className="flex-center" style={{ width: '36px', height: '36px', background: 'rgba(49, 46, 129, 0.05)', borderRadius: '10px' }}>
-             <Icon size={20} style={{ color: '#312E81' }} />
+            <Icon size={20} style={{ color: '#312E81' }} />
           </div>
           <div>
             <div style={{ color: '#312E81', fontSize: '0.8rem', fontWeight: 600, opacity: 0.7 }}>{label}</div>
             <div style={{ color: '#312E81', fontSize: '1.4rem', fontWeight: 800 }}>
-              {value ?? '--'}<span style={{ fontSize: '0.9rem', marginLeft: '2px', fontWeight: 600 }}>{unit}</span>
+              {displayValue}<span style={{ fontSize: '0.9rem', marginLeft: '2px', fontWeight: 600 }}>{value === -99 ? '' : unit}</span>
             </div>
           </div>
         </div>
-        
-        <button 
-          style={{ 
+
+        <button
+          style={{
             background: isActive ? '#312E81' : 'transparent',
             border: `1.5px solid ${isActive ? '#312E81' : 'rgba(49, 46, 129, 0.2)'}`,
             borderRadius: '20px',
@@ -56,40 +95,48 @@ const MetricOverlay = ({ label, value, unit, icon: Icon, historyData, onToggleHi
       </div>
 
       {/* Trend Chart Section */}
-      <div style={{ 
-        height: isActive ? '140px' : '0px', 
-        opacity: isActive ? 1 : 0, 
-        overflow: 'hidden', 
+      <div style={{
+        height: isActive ? '180px' : '0px',
+        opacity: isActive ? 1 : 0,
+        overflow: 'hidden',
         transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         marginTop: isActive ? '1rem' : '0'
       }}>
         {isActive && (
-          <div style={{ width: '100%', height: '140px' }}>
-            {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="time" hide />
-                  <YAxis domain={yDomain} hide />
-                  <Tooltip 
-                    contentStyle={{ background: '#312E81', border: 'none', borderRadius: '8px', color: 'white', fontSize: '12px' }}
-                    itemStyle={{ color: 'white' }}
-                    labelStyle={{ display: 'none' }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="value" 
-                    stroke="#312E81" 
-                    strokeWidth={3} 
-                    dot={false}
-                    animationDuration={1000}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex-center" style={{ height: '100%', color: '#312E81', opacity: 0.5, fontSize: '0.85rem', fontWeight: 600 }}>
-                暫無趨勢資料
-              </div>
-            )}
+          <div style={{ width: '100%', height: '180px', paddingRight: '10px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(49, 46, 129, 0.1)" />
+                <XAxis
+                  dataKey="time"
+                  tick={{ fontSize: 10, fill: '#312E81', fontWeight: 600 }}
+                  axisLine={{ stroke: 'rgba(49, 46, 129, 0.2)' }}
+                  tickLine={false}
+                  dy={10}
+                />
+                <YAxis
+                  domain={yConfig.domain}
+                  ticks={yConfig.ticks}
+                  tick={{ fontSize: 10, fill: '#312E81', fontWeight: 600 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  contentStyle={{ background: '#312E81', border: 'none', borderRadius: '8px', color: 'white', fontSize: '12px' }}
+                  itemStyle={{ color: 'white' }}
+                  labelStyle={{ display: 'none' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#312E81"
+                  strokeWidth={3}
+                  dot={false}
+                  animationDuration={1000}
+                  connectNulls={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         )}
       </div>
@@ -108,55 +155,120 @@ const VenuePanel = ({ venue, show, hasInteracted, onClose }) => {
 
     const fetchData = async () => {
       setLoading(true);
-      
-      const fetchRealTime = async () => {
-        try {
-          const fetchWithTimeout = (url, timeout = 3000) => {
-            return Promise.race([
-              fetch(url),
-              new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
-            ]);
-          };
+      const isIndoor = venue.type === 'indoor';
 
-          let apiRes;
-          try {
-            apiRes = await fetchWithTimeout(API_BASE, 3000);
-            if (!apiRes.ok) throw new Error(`HTTP Error: ${apiRes.status}`);
-            const apiData = await apiRes.json();
-            return apiData.results?.find(r => r.device_id === venue.deviceId)?.data;
-          } catch (e) {
-            console.warn('Real-time direct fetch failed or timed out, trying CORS proxy...');
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(API_BASE)}`;
-            const proxyRes = await fetch(proxyUrl);
-            const proxyData = await proxyRes.json();
-            const apiData = typeof proxyData.contents === 'string' ? JSON.parse(proxyData.contents) : proxyData.contents;
-            return apiData.results?.find(r => r.device_id === venue.deviceId)?.data;
-          }
+      const fetchIndoorData = async () => {
+        const testId = 'ab170023';
+        try {
+          // Real-time (Latest record)
+          const { data: rtRes, error: rtErr } = await supabase
+            .from('air_quality')
+            .select('*')
+            .eq('device_id', testId)
+            .order('device_time', { ascending: false })
+            .limit(1);
+
+          if (rtErr) throw rtErr;
+
+          // History for last 14 hours
+          const fourteenHoursAgo = new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString();
+          const { data: histRes, error: histErr } = await supabase
+            .from('air_quality')
+            .select('*')
+            .eq('device_id', testId)
+            .gte('device_time', fourteenHoursAgo)
+            .order('device_time', { ascending: true });
+
+          if (histErr) throw histErr;
+
+          // Data Dilution Logic (30 equidistant buckets over 14 hours)
+          const numBuckets = 30;
+          const now = Date.now();
+          const startTime = now - 14 * 60 * 60 * 1000;
+          const bucketWidth = (14 * 60 * 60 * 1000) / numBuckets;
+
+          const buckets = Array.from({ length: numBuckets }, (_, i) => ({
+            startTime: startTime + i * bucketWidth,
+            endTime: startTime + (i + 1) * bucketWidth,
+            points: []
+          }));
+
+          histRes.forEach(d => {
+            const time = new Date(d.device_time).getTime();
+            const bucketIndex = Math.floor((time - startTime) / bucketWidth);
+            if (bucketIndex >= 0 && bucketIndex < numBuckets) {
+              buckets[bucketIndex].points.push(d);
+            }
+          });
+
+          const dilutedHistory = buckets.map(bucket => {
+            const validPoints = bucket.points.filter(p => p.temperature !== -99 && p.humidity !== -99);
+            if (validPoints.length === 0) return null;
+
+            // Calculate averages for this bucket
+            const avg = (key) => validPoints.reduce((sum, p) => sum + p[key], 0) / validPoints.length;
+
+            return {
+              device_time: new Date(bucket.startTime).toISOString(),
+              temperature: avg('temperature'),
+              humidity: avg('humidity'),
+              pm25: avg('pm25'),
+              pm10: avg('pm10')
+            };
+          }).filter(p => p !== null);
+
+          return { rtData: rtRes?.[0] || null, histData: dilutedHistory };
         } catch (err) {
-          console.error('Real-time API fetch failed:', err);
-          return null;
+          console.error('Indoor Supabase fetch failed:', err);
+          return { rtData: null, histData: [] };
         }
       };
 
-      const fetchHistory = async () => {
+      const fetchOutdoorData = async () => {
         try {
-          const { data, error } = await supabase
-            .from('air_quality')
+          // Latest for real-time
+          const { data: rtRes, error: rtErr } = await supabase
+            .from('weather_logs')
             .select('*')
-            .eq('device_id', venue.deviceId)
-            .order('device_time', { ascending: false })
-            .limit(14);
-          
-          if (error) throw error;
-          return (data || []).reverse();
+            .order('obs_time', { ascending: false })
+            .limit(1);
+
+          if (rtErr) throw rtErr;
+
+          // History for charts (limit 100 to extract hourly samples)
+          const { data: histRes, error: histErr } = await supabase
+            .from('weather_logs')
+            .select('*')
+            .order('obs_time', { ascending: false })
+            .limit(100);
+
+          if (histErr) throw histErr;
+
+          // Hourly Sampling Logic
+          const sampledHistory = [];
+          if (histRes) {
+            const seenHours = new Set();
+            histRes.forEach(item => {
+              const hourKey = item.obs_time.substring(0, 13); // '2024-04-03 14'
+              if (!seenHours.has(hourKey)) {
+                sampledHistory.push(item);
+                seenHours.add(hourKey);
+              }
+            });
+          }
+
+          return {
+            rtData: rtRes?.[0] || null,
+            histData: sampledHistory.reverse()
+          };
         } catch (err) {
-          console.error('Supabase history error:', err);
-          return [];
+          console.error('Outdoor Supabase fetch error:', err);
+          return { rtData: null, histData: [] };
         }
       };
 
       try {
-        const [rtData, histData] = await Promise.all([fetchRealTime(), fetchHistory()]);
+        const { rtData, histData } = isIndoor ? await fetchIndoorData() : await fetchOutdoorData();
         setRealTime(rtData);
         setHistory(histData);
       } catch (err) {
@@ -174,21 +286,21 @@ const VenuePanel = ({ venue, show, hasInteracted, onClose }) => {
   const isIndoor = venue.type === 'indoor';
   const bgColor = isIndoor ? '#EADCF5' : '#F5EEDC';
   const panelSideClass = isIndoor ? (show ? 'panel-enter-left' : 'panel-exit-left') : (show ? 'panel-enter-right' : 'panel-exit-right');
-  
+
   if (!hasInteracted && !show) return null;
 
   const skeleton = (
     <div style={{ padding: '0.5rem 0' }}>
-       {[1, 2, 3, 4].map(i => (
-         <div key={i} style={{ height: '48px', borderRadius: '12px', background: 'rgba(49, 46, 129, 0.05)', marginBottom: '1rem', animation: 'pulse 1.5s infinite ease-in-out' }} />
-       ))}
+      {[1, 2, 3].map(i => (
+        <div key={i} style={{ height: '48px', borderRadius: '12px', background: 'rgba(49, 46, 129, 0.05)', marginBottom: '1rem', animation: 'pulse 1.5s infinite ease-in-out' }} />
+      ))}
     </div>
   );
 
   return (
-    <div 
+    <div
       className={`glass-panel panel-container ${panelSideClass}`}
-      style={{ 
+      style={{
         position: 'absolute',
         top: '0.2rem',
         [isIndoor ? 'left' : 'right']: '1.25rem',
@@ -222,14 +334,14 @@ const VenuePanel = ({ venue, show, hasInteracted, onClose }) => {
           }
         }
       `}</style>
-      
+
       <div className="flex-between" style={{ marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#312E81' }}>{venue.name}</h2>
-        <button 
+        <button
           onClick={onClose}
-          style={{ 
-            width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(49, 46, 129, 0.1)', 
-            border: 'none', color: '#312E81', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' 
+          style={{
+            width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(49, 46, 129, 0.1)',
+            border: 'none', color: '#312E81', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}
         >
           <X size={18} strokeWidth={2.5} />
@@ -238,26 +350,48 @@ const VenuePanel = ({ venue, show, hasInteracted, onClose }) => {
 
       {loading ? skeleton : (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <MetricOverlay 
-            label="體感溫度" value={realTime?.temperature} unit="°" icon={Thermometer} 
-            historyData={history} isActive={activeMetric === '體感溫度'} 
-            onToggleHistory={() => setActiveMetric(prev => prev === '體感溫度' ? null : '體感溫度')} 
-          />
-          <MetricOverlay 
-            label="濕度" value={realTime?.humidity} unit="%" icon={Droplets} 
-            historyData={history} isActive={activeMetric === '濕度'} 
-            onToggleHistory={() => setActiveMetric(prev => prev === '濕度' ? null : '濕度')} 
-          />
-          <MetricOverlay 
-            label="PM2.5" value={realTime?.pm25} unit="µg/m³" icon={CloudFog} 
-            historyData={history} isActive={activeMetric === 'PM2.5'} 
-            onToggleHistory={() => setActiveMetric(prev => prev === 'PM2.5' ? null : 'PM2.5')} 
-          />
-          <MetricOverlay 
-            label="PM10" value={realTime?.pm10} unit="µg/m³" icon={CloudFog} 
-            historyData={history} isActive={activeMetric === 'PM10'} 
-            onToggleHistory={() => setActiveMetric(prev => prev === 'PM10' ? null : 'PM10')} 
-          />
+          {isIndoor ? (
+            <>
+              <MetricOverlay
+                label="溫度" value={realTime?.temperature} unit="°" icon={Thermometer}
+                historyData={history} isActive={activeMetric === '體感溫度'} isOutdoor={false}
+                onToggleHistory={() => setActiveMetric(prev => prev === '體感溫度' ? null : '體感溫度')}
+              />
+              <MetricOverlay
+                label="濕度" value={realTime?.humidity} unit="%" icon={Droplets}
+                historyData={history} isActive={activeMetric === '濕度'} isOutdoor={false}
+                onToggleHistory={() => setActiveMetric(prev => prev === '濕度' ? null : '濕度')}
+              />
+              <MetricOverlay
+                label="PM2.5" value={realTime?.pm25} unit="µg/m³" icon={CloudFog}
+                historyData={history} isActive={activeMetric === 'PM2.5'} isOutdoor={false}
+                onToggleHistory={() => setActiveMetric(prev => prev === 'PM2.5' ? null : 'PM2.5')}
+              />
+              <MetricOverlay
+                label="PM10" value={realTime?.pm10} unit="µg/m³" icon={CloudFog}
+                historyData={history} isActive={activeMetric === 'PM10'} isOutdoor={false}
+                onToggleHistory={() => setActiveMetric(prev => prev === 'PM10' ? null : 'PM10')}
+              />
+            </>
+          ) : (
+            <>
+              <MetricOverlay
+                label="溫度" value={realTime?.temperature} unit="°C" icon={Thermometer}
+                historyData={history} isActive={activeMetric === '實測溫度'} isOutdoor={true}
+                onToggleHistory={() => setActiveMetric(prev => prev === '實測溫度' ? null : '實測溫度')}
+              />
+              <MetricOverlay
+                label="濕度" value={realTime?.humidity} unit="%" icon={Droplets}
+                historyData={history} isActive={activeMetric === '相對濕度'} isOutdoor={true}
+                onToggleHistory={() => setActiveMetric(prev => prev === '相對濕度' ? null : '相對濕度')}
+              />
+              <MetricOverlay
+                label="紫外線指數" value={realTime?.uv_index} unit="" icon={Sun}
+                historyData={history} isActive={activeMetric === '紫外線指數'} isOutdoor={true}
+                onToggleHistory={() => setActiveMetric(prev => prev === '紫外線指數' ? null : '紫外線指數')}
+              />
+            </>
+          )}
         </div>
       )}
     </div>

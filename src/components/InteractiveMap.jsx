@@ -24,8 +24,8 @@ const icons = {
 const InteractiveMap = ({ onSelectVenue, isActive }) => {
   const venues = {
     track: { id: 'track', name: '操場環境', type: 'outdoor', deviceId: 'device_4' },
-    indoorBB: { id: 'indoor_bb', name: '室內籃球場環境', type: 'indoor', deviceId: 'device_1' },
-    indoorVB: { id: 'indoor_vb', name: '室內排球場環境', type: 'indoor', deviceId: 'device_2' },
+    indoorBB: { id: 'indoor_bb', name: '室內籃球場環境', type: 'indoor', deviceId: 'ab170023' },
+    indoorVB: { id: 'indoor_vb', name: '室內排球場環境', type: 'indoor', deviceId: 'ab170019' },
     outdoorBB: { id: 'outdoor_bb', name: '室外籃球場環境', type: 'outdoor', deviceId: 'device_6' },
     outdoorVB: { id: 'outdoor_vb', name: '室外排球場環境', type: 'outdoor', deviceId: 'device_7' },
     tennis: { id: 'tennis', name: '室外網球場環境', type: 'outdoor', deviceId: 'ab170023' },
@@ -79,7 +79,7 @@ const InteractiveMap = ({ onSelectVenue, isActive }) => {
               aspect-ratio: 4/3; /* Slightly taller aspect ratio for mobile screens */
             }
           }
-          .interactive-map.active .map-zone {
+          // .interactive-map.active .map-zone {
             box-shadow: var(--shadow-glow);
           }
           .map-icon {
