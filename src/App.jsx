@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import InteractiveMap from './components/InteractiveMap';
 import SidePanels from './components/SidePanels';
@@ -12,6 +12,8 @@ const App = () => {
   const [showPanels, setShowPanels] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [selectedVenue, setSelectedVenue] = useState(null);
+  const panelRef = useRef(null);
+  const mapRef = useRef(null);
 
   const handleSelectVenue = (venue) => {
     // If clicking the same venue that is already open, toggle it off
@@ -24,6 +26,27 @@ const App = () => {
     setHasInteracted(true);
   };
 
+  // Global click-outside handler to close panels
+  useEffect(() => {
+    if (!showPanels) return;
+
+    const handleClickOutside = (e) => {
+      // Don't close if clicking on the panel itself
+      if (panelRef.current && panelRef.current.contains(e.target)) {
+        return;
+      }
+      // Don't close if clicking on the map
+      if (mapRef.current && mapRef.current.contains(e.target)) {
+        return;
+      }
+      // Close the panel for any other click
+      setShowPanels(false);
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showPanels]);
+
   return (
     <div className="dashboard-container">
       <Header />
@@ -31,8 +54,7 @@ const App = () => {
       <main className="dashboard-main">
         {/* Top Section: Map with pop-out panels */}
         <div className="map-and-panels-container">
-          {/* Scoped backdrop: closes panel when clicking empty map area.
-              position:absolute keeps it inside this container only (not blocking forecast below) */}
+          {/* Scoped backdrop: closes panel when clicking empty map area */}
           {showPanels && (
             <div
               style={{
@@ -42,14 +64,16 @@ const App = () => {
               onClick={() => setShowPanels(false)}
             />
           )}
-          <SidePanels 
-            show={showPanels} 
-            hasInteracted={hasInteracted} 
-            venue={selectedVenue} 
-            onClose={() => setShowPanels(false)}
-          />
+          <div ref={panelRef}>
+            <SidePanels 
+              show={showPanels} 
+              hasInteracted={hasInteracted} 
+              venue={selectedVenue} 
+              onClose={() => setShowPanels(false)}
+            />
+          </div>
           
-          <div className="center-map-wrapper">
+          <div className="center-map-wrapper" ref={mapRef}>
              <InteractiveMap onSelectVenue={handleSelectVenue} isActive={showPanels} />
           </div>
         </div>
