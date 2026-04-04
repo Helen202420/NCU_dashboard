@@ -5,49 +5,19 @@ const strokeColor = "var(--color-primary-dark)";
 
 const icons = {
   basketball: (
-    <svg width="45%" height="45%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M 2 12 H 22 M 12 2 V 22 M 4.9 4.9 Q 10.5 12 4.9 19.1 M 19.1 4.9 Q 13.5 12 19.1 19.1" />
-    </svg>
+    <img src="https://img.icons8.com/ios-filled/50/basketball-2.png" alt="basketball" className="map-icon" />
   ),
   volleyball: (
-    <svg width="45%" height="45%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(-20deg)' }}>
-      <circle cx="12" cy="12" r="10" />
-      <path d="M 8.9 2.5 Q 4 12 8.9 21.5 M 15.1 2.5 Q 20 12 15.1 21.5 M 6.4 7.5 Q 12 9.5 17.6 7.5 M 6.4 16.5 Q 12 14.5 17.6 16.5 M 2 12 L 6 12 M 4.8 5 L 7.3 6.6 M 4.8 19 L 7.3 17.4 M 22 12 L 18 12 M 19.2 5 L 16.7 6.6 M 19.2 19 L 16.7 17.4" />
-    </svg>
+    <img src="https://img.icons8.com/ios-filled/50/volleyball-2.png" alt="volleyball" className="map-icon" />
   ),
   runner: (
-    <svg width="45%" height="55%" viewBox="0 0 24 24" stroke={strokeColor} strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'translateX(-2px)' }}>
-      {/* Head */}
-      <circle cx="16" cy="3.5" r="2.2" fill={strokeColor} stroke="none" />
-
-      {/* Right Arm (forward, bent up) */}
-      <path d="M 13.5 7.5 L 17 10 L 20.5 5" fill="none" />
-
-      {/* Left Arm (backward, swept left and down) */}
-      <path d="M 13.5 7.5 L 9 10 L 5 12" fill="none" />
-
-      {/* Torso */}
-      <path d="M 13.5 7.5 L 11 14" fill="none" />
-
-      {/* Right Leg (front knee bent, leg down) */}
-      <path d="M 11 14 L 15 17.5 L 12 22.5" fill="none" />
-
-      {/* Left Leg (back, foot swept high) */}
-      <path d="M 11 14 L 7 17.5 L 2 15" fill="none" />
-    </svg>
+    <img src="https://img.icons8.com/ios-filled/50/running.png" alt="running" className="map-icon" />
   ),
   tennis: (
-    <svg width="45%" height="45%" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(25deg)' }}>
-      <circle cx="12" cy="12" r="10" />
-      <path d="M4.9 4.9 Q 10.5 12 4.9 19.1" />
-      <path d="M19.1 4.9 Q 13.5 12 19.1 19.1" />
-    </svg>
+    <img src="https://img.icons8.com/ios-filled/50/tennis-2.png" alt="tennis" className="map-icon" />
   ),
   restroom: (
-    <svg width="60%" height="60%" viewBox="0 0 24 24" overflow="visible">
-      <text x="50%" y="54%" dy="0.35em" fill={strokeColor} fontSize="14" fontWeight="900" fontFamily="Inter, sans-serif" textAnchor="middle">WC</text>
-    </svg>
+    <img src="https://img.icons8.com/ios-filled/50/toilet.png" alt="restroom" className="map-icon" />
   )
 };
 
@@ -111,6 +81,17 @@ const InteractiveMap = ({ onSelectVenue, isActive }) => {
           }
           .interactive-map.active .map-zone {
             box-shadow: var(--shadow-glow);
+          }
+          .map-icon {
+            max-width: 60%;
+            max-height: 60%;
+            object-fit: contain;
+            /* Filter to turn black (#000000) to Deep Purple (#2D1B4D) */
+            filter: invert(12%) sepia(48%) saturate(4552%) hue-rotate(252deg) brightness(91%) contrast(105%);
+            transition: transform 0.3s ease;
+          }
+          .map-zone:hover .map-icon {
+            transform: scale(1.1);
           }
         `}
       </style>
