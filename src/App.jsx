@@ -31,7 +31,17 @@ const App = () => {
       <main className="dashboard-main">
         {/* Top Section: Map with pop-out panels */}
         <div className="map-and-panels-container">
-          {showPanels && <div className="side-panel-backdrop" onClick={() => setShowPanels(false)}></div>}
+          {/* Scoped backdrop: closes panel when clicking empty map area.
+              position:absolute keeps it inside this container only (not blocking forecast below) */}
+          {showPanels && (
+            <div
+              style={{
+                position: 'absolute', inset: 0,
+                zIndex: 6, cursor: 'default'
+              }}
+              onClick={() => setShowPanels(false)}
+            />
+          )}
           <SidePanels 
             show={showPanels} 
             hasInteracted={hasInteracted} 

@@ -55,7 +55,7 @@ const InteractiveMap = ({ onSelectVenue, isActive }) => {
             cursor: pointer;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease, box-shadow 0.3s ease;
             box-shadow: var(--shadow-sm);
-            z-index: 1;
+            z-index: 10;
             overflow: visible;
             border: 1px solid rgba(255,255,255,0.4);
           }

@@ -299,6 +299,7 @@ const VenuePanel = ({ venue, show, hasInteracted, onClose }) => {
         zIndex: 100,
         pointerEvents: 'auto'
       }}
+      onClick={(e) => e.stopPropagation()}
     >
       <style>{`
         @keyframes pulse {
