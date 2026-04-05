@@ -7,7 +7,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function test() {
   const { data, error } = await supabase
-    .from('air_quality')
+    .from('box')
     .select('*')
     .eq('device_id', 'ab170023')
     .order('device_time', { ascending: false })

@@ -152,7 +152,7 @@ const VenuePanel = ({ venue, show, hasInteracted, onClose }) => {
         try {
           // Real-time (Latest record)
           const { data: rtRes, error: rtErr } = await supabase
-            .from('air_quality')
+            .from('box')
             .select('*')
             .eq('device_id', testId)
             .order('device_time', { ascending: false })
@@ -163,7 +163,7 @@ const VenuePanel = ({ venue, show, hasInteracted, onClose }) => {
           // History for last 14 hours
           const fourteenHoursAgo = new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString();
           const { data: histRes, error: histErr } = await supabase
-            .from('air_quality')
+            .from('box')
             .select('*')
             .eq('device_id', testId)
             .gte('device_time', fourteenHoursAgo)
