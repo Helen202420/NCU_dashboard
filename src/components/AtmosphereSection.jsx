@@ -129,15 +129,12 @@ const AtmosphereSection = () => {
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <Cloud size={24} color="#E5D3A8" strokeWidth={2} />
-          <h2 style={{ fontSize: 'var(--fs-h2)', fontWeight: 700, color: '#E5D3A8', marginBottom: 0 }}>天氣雷達圖 - 3小時動畫</h2>
+          <h2 style={{ fontSize: 'var(--fs-h2)', fontWeight: 700, color: '#E5D3A8', marginBottom: 0 }}>天氣雷達圖</h2>
         </div>
         
         <div style={{ fontSize: 'var(--fs-tiny)', fontWeight: 600, color: '#CBD5E1', marginTop: '0.4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {loading && <span>載入中...</span>}
           {error && <span style={{ color: '#FCA5A5' }}>暫時無法取得圖像</span>}
-          {!loading && !error && imagesData.length > 0 && (
-            <span>{currentIndex + 1} / {imagesData.length} • {currentImage?.time || ''}</span>
-          )}
         </div>
       </div>
 
