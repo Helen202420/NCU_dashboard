@@ -96,9 +96,9 @@ const InteractiveMap = ({ onSelectVenue, isActive }) => {
         `}
       </style>
 
-      {/* Center Huge Oval (Runner/Track) */}
+      {/* Center Huge Oval (Runner/Track) - Vertical Stadium Shape */}
       <div className="map-zone" onClick={() => onSelectVenue(venues.track)} style={{
-        left: '30%', top: '5%', width: '38%', height: '70%', borderRadius: '50%'
+        left: '32.5%', top: '5%', width: '35%', height: '75%', borderRadius: '50%'
       }}>
         {icons.runner}
       </div>
@@ -153,7 +153,7 @@ const InteractiveMap = ({ onSelectVenue, isActive }) => {
 
       {/* Bottom Center (Tennis) - Outdoor */}
       <div className="map-zone" onClick={() => onSelectVenue(venues.tennis)} style={{
-        left: '28%', top: '83%', width: '46%', height: '16%', borderRadius: '4px'
+        left: '28%', top: '84%', width: '46%', height: '19%', borderRadius: '4px'
       }}>
         {icons.tennis}
       </div>
