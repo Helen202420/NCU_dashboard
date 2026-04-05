@@ -5,7 +5,6 @@ const ForecastList = () => {
   const [weatherData, setWeatherData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentHour, setCurrentHour] = useState(null);
 
   // 根據 status 關鍵字映射對應的天氣圖示
   const getWeatherIcon = (status) => {
@@ -36,13 +35,6 @@ const ForecastList = () => {
     
     return Cloud; // 預設
   };
-
-  useEffect(() => {
-    // 設置當前小時
-    const now = new Date();
-    const hour = String(now.getHours()).padStart(2, '0');
-    setCurrentHour(hour);
-  }, []);
 
   useEffect(() => {
     const fetchWeatherData = async () => {
@@ -105,15 +97,13 @@ const ForecastList = () => {
         <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-primary-dark)' }}>24小時天氣預報</h2>
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1.5rem', WebkitOverflowScrolling: 'touch', minHeight: '360px' }}>
+      <div style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1.5rem', WebkitOverflowScrolling: 'touch', minHeight: '360px' }}>
         {weatherData.map((item, i) => {
           const WeatherIcon = getWeatherIcon(item.status);
-          const isCurrentHour = item.time.startsWith(currentHour);
-          
           return (
             <div 
               key={i} 
-              className={isCurrentHour ? 'glass-panel forecast-card-current' : 'glass-panel'}
+              className="glass-panel text-white"
               style={{ 
                 background: 'var(--color-primary)',
                 minWidth: '200px', 
@@ -123,37 +113,23 @@ const ForecastList = () => {
                 flexDirection: 'column', 
                 alignItems: 'center', 
                 justifyContent: 'space-between',
-                border: isCurrentHour ? '2px solid #FFD700' : '1px solid rgba(229, 211, 168, 0.4)',
+                border: '1px solid rgba(229, 211, 168, 0.4)',
                 position: 'relative',
                 cursor: 'default',
-                boxShadow: isCurrentHour ? '0 6px 20px rgba(255, 215, 0, 0.15), 0 12px 24px rgba(45, 27, 77, 0.15)' : '0 12px 24px rgba(45, 27, 77, 0.15)',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                borderRadius: '24px',
-                transform: isCurrentHour ? 'scale(1.03)' : 'scale(1)',
+                boxShadow: '0 12px 24px rgba(45, 27, 77, 0.15)',
+                transition: 'transform 0.3s ease',
+                borderRadius: '24px'
               }}>
-              
-              {isCurrentHour && (
-                <div style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '4px',
-                  background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
-                  borderRadius: '24px 24px 0 0'
-                }} />
-              )}
               
               {/* ===== LAYER 1: 時間層 (上方) ===== */}
               <div style={{ 
                 fontSize: '0.85rem', 
                 fontWeight: 300, 
-                color: isCurrentHour ? '#FFD700' : 'rgba(200, 180, 220, 0.9)',
+                color: 'rgba(200, 180, 220, 0.9)',
                 letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-                transition: 'color 0.3s ease'
+                textTransform: 'uppercase'
               }}>
-                {isCurrentHour ? '🔴 ' : ''}{item.time}
+                {item.time}
               </div>
               
               {/* ===== LAYER 2: 天氣核心層 (圖示 + 狀態文字) ===== */}
@@ -194,8 +170,7 @@ const ForecastList = () => {
                   fontSize: '2.8rem', 
                   fontWeight: 800, 
                   color: 'rgba(255, 255, 255, 1)',
-                  lineHeight: '1',
-                  letterSpacing: '-0.05em'
+                  lineHeight: '1'
                 }}>
                   {item.temp}°
                 </div>
@@ -210,8 +185,7 @@ const ForecastList = () => {
                   gap: '0.4rem',
                   backgroundColor: 'rgba(96, 165, 250, 0.1)',
                   padding: '0.4rem 0.8rem',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(96, 165, 250, 0.3)'
+                  borderRadius: '8px'
                 }}>
                   <Umbrella size={18} color="#60A5FA" strokeWidth={2} />
                   {item.pop}%
@@ -225,9 +199,7 @@ const ForecastList = () => {
                 color: 'rgba(200, 180, 220, 0.8)', 
                 display: 'flex', 
                 alignItems: 'center', 
-                gap: '0.3rem',
-                paddingTop: '0.8rem',
-                borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+                gap: '0.3rem'
               }}>
                 <Droplets size={14} color="rgba(200, 180, 220, 0.8)" strokeWidth={2} />
                 RH {item.humidity}%
